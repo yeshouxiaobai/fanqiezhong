@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>随机番茄钟</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <meta name="theme-color" content="#4CAF50">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        <canvas id="particles-canvas"></canvas>
+        
+        <div class="container">
+            <h1 class="status-text">{{ statusText }}</h1>
+            <div class="timer">{{ formattedTime }}</div>
+            
+            <div class="controls">
+                <button v-if="!isRunning" @click="startTimer" class="btn btn-primary">开始专注</button>
+                <button v-else @click="stopTimer" class="btn btn-danger">停止</button>
+                <button @click="showSettings = true" class="btn btn-secondary">设置</button>
+            </div>
+        </div>
+
+        <!-- 设置模态框 -->
+        <div v-if="showSettings" class="modal-overlay">
+            <div class="modal">
+                <h2>设置</h2>
+                <div class="form-group">
+                    <label>专注总时长 (分钟)</label>
+                    <input type="number" v-model.number="settings.workDuration" min="1">
+                </div>
+                <div class="form-group">
+                    <label>随机休息间隔 (分钟)</label>
+                    <div class="range-inputs">
+                        <input type="number" v-model.number="settings.randomBreakMin" min="1" placeholder="最小">
+                        <span>~</span>
+                        <input type="number" v-model.number="settings.randomBreakMax" min="1" placeholder="最大">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>随机休息时长 (秒)</label>
+                    <input type="number" v-model.number="settings.randomBreakDuration" min="5">
+                </div>
+                <div class="form-group">
+                    <label>结束休息时长 (分钟)</label>
+                    <input type="number" v-model.number="settings.longBreakDuration" min="1">
+                </div>
+                <div class="modal-actions">
+                    <button @click="saveSettings" class="btn btn-primary">保存</button>
+                    <button @click="showSettings = false" class="btn btn-secondary">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful');
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
